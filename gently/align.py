@@ -22,20 +22,20 @@ def align_csv(filename, delim): # so basically, from gently.align import align_c
     t_sfid_df = pd.read_csv(
         filename, delimiter=delim
     ).rename(columns={0: "transcription", 1: "path_to_file"})
-    _align_files(t_sfid_df)
+    align_files(t_sfid_df)
 
 
-def _align_files(t_sfid_df):
+def align_files(t_sfid_df):
     for ix, t in t_sfid_df.iterrows():
         transcription = t['transcription']
         path = t['path_to_file']
         textgrid_path = path.split(".")[0] + '.TextGrid'
-        alignment = _align_file(transcription, path)
+        alignment = align_file(transcription, path)
         textgrid = _to_textgrid(alignment, path)
         _save_textgrid(textgrid, textgrid_path)
 
 
-def _align_file(transcription, snd_filename):
+def align_file(transcription, snd_filename):
     # TODO: Add a file of "sound files that did not finish"
     class TimeoutException(Exception):
         pass

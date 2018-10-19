@@ -1,69 +1,26 @@
 # gently
 Gentle and praatio for easy production data transcription
 
-
-#### Before you get started
-
-##### Install the dependencies
-
-Navigate to wherever you put your git repositories.
-
-* Installing `gentle`
+To install gently, simply clone from this repository. You can do so with pip from within the `gently` directory:
 
 ```
-git clone https://github.com/lowerquality/gentle.git
-cd gentle/
-pip3 install -e . --user    # will install local python package
-./install.sh                # will install dependences, e.g. sphinx
+cd wherever_you_put_your_github_repos
+git clone https://github.com/BayesForDays/gently.git
+cd gently
+pip3 install -e .
 ```
 
-* Installing `praatio` is quite simple, as TJM put it on pypi.
+To use `gently` from within Python (currently only tested on 3.7) you will need a csv describing your data containing two things:
+
+1. A csv containing transcriptions (first column) and filenames (second column). Filenames can be absolute or relative paths.
+2. .wav files corresponding to those filenames / paths.
+
+As-is, the alignment functions will save textgrids to the same folder as your wav files. It is always a good idea to do backups. If you have existing TextGrids, consider moving them to another folder OR making a copy of your wav files and running your script over the copies. Here is a skeleton of an example:
 
 ```
-pip3 install praatio --upgrade --user
-```
+from gently.align import align_csv
+import pandas as pd
 
-##### Make your transcriptions
-
-I can't tell you how to code your data. Only you know what you want to write. But, the beautiful thing about `gentle` is that it's robust to disfluencies and higher degrees of background noise. The quality of your transcription *will* affect how well the forced aligner does.
-
-#### Run the forced aligner
-
-You can run the forced aligner from within python. Here's a minimum working example:
+example_df = pd.read_csv("example_df.txt", sep="\t")
 
 ```
-import gentle
-import multiprocessing
-
-filename_to_transcribe = 'BayesForDays_tells_a_joke.wav'
-transcript = """
-Want to hear a joke about a piece of paper? Nevermind, it's terrible.
-"""
-
-resources = gentle.Resources()
-nthreads = multiprocessing.cpu_count()
-
-with gentle.resampled(filename_to_transcribe) as wavfile:
-    aligner = gentle.ForcedAligner(resources, transcript, nthreads=nthreads)
-    result = aligner.transcribe(wavfile)
-```
-
-And if you want to inspect `result`, you can get the contents in either json or csv format. If you choose csv formatting, the contents will look something like this (header not included):
-
-```
-raw_str     lower_str   start   end
-Want        want        0.65	0.86
-to          to	        0.86	0.9
-hear        hear        0.9	1.11
-a           a	        1.11	1.18
-joke        joke        1.18	1.47
-about       about       1.48	1.7
-a           a	        1.7	1.75
-piece       piece       1.75	1.97
-of          of	        1.97	2.09
-paper       paper	2.09	2.57
-Nevermind   nevermind	3.04	3.72
-it's        it's	3.88	4.13
-terrible    terrible	4.13	4.76
-```
-
