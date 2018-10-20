@@ -16,6 +16,8 @@ setup(
     ],
     install_requires=[
         'praatio',
+        'pandas',
+        'wave',
         'gentle'
     ],
     dependency_links=[
