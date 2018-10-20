@@ -31,8 +31,8 @@ def align_files(t_sfid_df):
         path = t['path_to_file']
         textgrid_path = path.split(".")[0] + '.TextGrid'
         alignment = align_file(transcription, path)
-        textgrid = _to_textgrid(alignment, path)
-        _save_textgrid(textgrid, textgrid_path)
+        textgrid = alignment_to_textgrid(alignment, path)
+        save_textgrid(textgrid, textgrid_path)
 
 
 def align_file(transcription, snd_filename):
@@ -62,7 +62,7 @@ def align_file(transcription, snd_filename):
     return result
 
 
-def _to_textgrid(alignment, path):
+def alignment_to_textgrid(alignment, path):
     """
     Take a filename and its associated transcription and fill in all the gaps
     """
@@ -81,7 +81,6 @@ def _to_textgrid(alignment, path):
             target = word['alignedWord']
             if (ix >= 1) and (ix < (len(content['words']))):
                 prev_word = content['words'][ix - 1]
-                prev_ons = prev_word['start']
                 prev_off = prev_word['end']
                 if word['start'] > prev_off:
                     rearranged_words.append((prev_off, word_ons, ''))
@@ -97,7 +96,7 @@ def _to_textgrid(alignment, path):
     return tg
 
 
-def _save_textgrid(textgrid, path):
+def save_textgrid(textgrid, path):
     if path is not None:
         textgrid.save(path)
 
